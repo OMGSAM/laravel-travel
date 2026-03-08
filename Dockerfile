@@ -1,5 +1,5 @@
 # Base image PHP avec extensions Laravel
-FROM php:8.2-fpm
+FROM php:8.0-fpm
 
 # Installer dépendances système
 RUN apt-get update && apt-get install -y \
