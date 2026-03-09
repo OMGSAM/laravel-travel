@@ -1,6 +1,15 @@
 # ingest.py
 
 # LangChain permet de créer facilement des pipelines LLM
+
+#  $response = Http::get('http://localhost:8000/ask', [
+ #    'question' => 'Quels sont vos horaires ?'
+# ]);
+
+#return $response->json();
+
+
+
 from langchain.document_loaders import TextLoader
 
 # Permet de découper les textes en morceaux
