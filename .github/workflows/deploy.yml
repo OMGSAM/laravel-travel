@@ -1,0 +1,50 @@
+name: Deploy Laravel to InfinityFree
+
+on:
+  push:
+    branches:
+      - main  # ou master
+
+jobs:
+  deploy:
+    name: Deploy via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2️⃣ Set up PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'  # doit correspondre à InfinityFree
+
+      # 3️⃣ Install Composer dependencies
+      - name: Install Composer
+        run: composer install --no-dev --optimize-autoloader
+
+      # 4️⃣ Build assets si nécessaire
+      - name: Build frontend assets
+        run: |
+          npm install
+          npm run prod
+
+      # 5️⃣ Cache config, routes, views
+      - name: Optimize Laravel
+        run: |
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+
+      # 6️⃣ Upload via FTP
+      - name: Deploy to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+        with:
+          server: ${{ secrets.FTP_HOST }}      # ex: ftp.epizy.com
+          username: ${{ secrets.FTP_USER }}    # ton user FTP
+          password: ${{ secrets.FTP_PASSWORD }}    # mot de passe FTP
+          local-dir: ./                         # répertoire local à uploader
+          server-dir: /htdocs                   # racine web InfinityFree
+          git-ftp-args: --insecure             # pour éviter SSL errors si InfinityFree
